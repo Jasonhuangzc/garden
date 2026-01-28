@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\34902\Desktop\garden\fetch_current_data.py", line 71, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\34902\Desktop\garden\fetch_current_data.py", line 15, in main
+    print("\U0001f4e1 正在获取当前数据...")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4e1' in position 0: illegal multibyte sequence

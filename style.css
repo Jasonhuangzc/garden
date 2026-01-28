@@ -1,0 +1,943 @@
+/* ========================================
+   CSS Variables & Reset
+   ======================================== */
+:root {
+    /* Colors */
+    --bg-gradient-start: #FFF5F7;
+    --bg-gradient-mid: #F8F3FF;
+    --bg-gradient-end: #F0F8FF;
+
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(255, 255, 255, 0.5);
+
+    --primary-pink: #FF5C8D;
+    --primary-pink-hover: #FF7BA5;
+    --primary-pink-light: #FFE5EE;
+
+    --text-primary: #2D3748;
+    --text-secondary: #718096;
+    --text-light: #A0AEC0;
+
+    --shadow-soft: 0 8px 32px rgba(255, 92, 141, 0.12);
+    --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.08);
+
+    /* Spacing */
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 20px;
+    --spacing-xl: 24px;
+
+    /* Border Radius */
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+    --radius-xl: 24px;
+    --radius-full: 9999px;
+
+    /* Font */
+    --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-image: url('image/image\ (1).png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    color: var(--text-primary);
+    padding: var(--spacing-md);
+    padding-bottom: 200px;
+    /* Space for fixed status bar */
+    overflow-x: hidden;
+}
+
+/* ========================================
+   Card Styles
+   ======================================== */
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-soft);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.garden-card {
+    background: linear-gradient(to right,
+            rgba(255, 245, 250, 0.85) 0%,
+            rgba(255, 255, 255, 0.85) 100%);
+    border: 1px solid rgba(255, 192, 203, 0.2);
+}
+
+
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.title-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* ========================================
+   Garden Store
+   ======================================== */
+.store-card {
+    background: linear-gradient(to right,
+            rgba(255, 235, 245, 0.7) 0%,
+            rgba(250, 240, 255, 0.7) 50%,
+            rgba(230, 245, 255, 0.7) 100%);
+    padding: 16px 18px;
+    border-radius: 22px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+    box-shadow: 0 2px 12px rgba(150, 150, 200, 0.08);
+}
+
+.title-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.pts-badge {
+    background: rgba(255, 250, 230, 0.9);
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(255, 159, 77, 0.2);
+}
+
+.coin-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.pts-text {
+    color: #FF9F4D;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 12px;
+    padding: 2px 0 4px;
+}
+
+.store-item {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.flower-icon {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    margin-bottom: 1px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    animation: gentleSwing 3s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+@keyframes gentleSwing {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(3deg);
+    }
+
+    75% {
+        transform: rotate(-3deg);
+    }
+}
+
+.flower-icon.bounce-animate {
+    animation: flowerBounce 0.6s ease-in-out;
+}
+
+@keyframes flowerBounce {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    25% {
+        transform: scale(1.3) rotate(12deg);
+    }
+
+    50% {
+        transform: scale(1.3) rotate(-12deg);
+    }
+
+    75% {
+        transform: scale(1.3) rotate(8deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.flower-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #2D3748;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.flower-price {
+    font-size: 9px;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 4px;
+}
+
+.redeem-btn {
+    background: linear-gradient(135deg, #FF5C8D 0%, #FF8FB5 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(255, 92, 141, 0.25);
+    width: 100%;
+}
+
+.redeem-btn:hover:not(.disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(255, 92, 141, 0.35);
+}
+
+.redeem-btn:active:not(.disabled) {
+    transform: translateY(0);
+}
+
+.redeem-btn.disabled {
+    background: linear-gradient(135deg, #D0D5DD 0%, #E5E7EB 100%);
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* ========================================
+   Garden Section
+   ======================================== */
+.garden-title-area {
+    flex: 1;
+}
+
+.garden-subtitle {
+    display: none;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.weather-badge {
+    display: none;
+    background: rgba(74, 158, 255, 0.1);
+    color: #4A9EFF;
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    align-items: center;
+    gap: 4px;
+}
+
+.garden-info {
+    background: rgba(144, 238, 144, 0.2);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    color: #4CAF50;
+}
+
+.garden-display {
+    position: relative;
+    width: 100%;
+    /* 移除 overflow: hidden 以便花朵可以超出边界显示 */
+    overflow: visible;
+    background: transparent;
+    padding: 0;
+    margin-top: var(--spacing-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.garden-bg-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* 图片自己负责圆角 */
+    border-radius: var(--radius-lg);
+    position: relative;
+    z-index: 0;
+}
+
+/* 花园网格 - 绝对定位布局容器 */
+.garden-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    display: block;
+    z-index: 10;
+    /* 确保网格在图片之上 */
+    pointer-events: none;
+    /* 让鼠标事件穿透网格空白处 */
+}
+
+/* 单个格子 - 绝对定位 */
+.garden-plot {
+    position: absolute;
+    /* 预设大小，实际位置由JS控制 */
+    width: 8%;
+    /* 约占宽度的8% */
+    height: 8%;
+    /* 约占高度的8% */
+    transform: translate(-50%, -50%);
+    /* 居中定位点 */
+
+    background: transparent;
+    border: none;
+
+    display: flex;
+    align-items: flex-end;
+    /* 底部对齐，让花种在地上 */
+    justify-content: center;
+    pointer-events: auto;
+    /* 开启交互 */
+
+    /* 调试用：发布时注释掉 */
+    /* border: 1px dashed rgba(255,255,25, 0.5); */
+}
+
+.garden-plot.empty:hover {
+    /* 简单的光标效果 */
+    filter: brightness(1.2);
+    cursor: pointer;
+}
+
+/* 已种植的格子 */
+.garden-plot.planted {
+    background: transparent;
+    border: none;
+}
+
+/* 格子内的花朵 - 原图显示，无变形 */
+.plot-flower {
+    width: 90%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+
+    /* 底部修正，确保花根在泥土中心 */
+    margin-bottom: 25%;
+
+    /* 入场动画 + 持续摇摆 */
+    animation: flowerPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        flowerSway 3s ease-in-out 0.5s infinite;
+    transform-origin: bottom center;
+    /* 从根部摇摆 */
+}
+
+/* 入场动画 */
+@keyframes flowerPop {
+    0% {
+        transform: scale(0) translateY(50%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 持续摇摆动画 - 左下到右上的小弧度 */
+@keyframes flowerSway {
+
+    0%,
+    100% {
+        transform: rotate(-2deg);
+    }
+
+    50% {
+        transform: rotate(2deg);
+    }
+}
+
+
+/* 格子序号（调试用，可选） */
+.plot-number {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    font-size: 6px;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.garden-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-lg);
+}
+
+.sun-icon {
+    position: absolute;
+    top: 6px;
+    /* 更靠上 */
+    right: 6px;
+    /* 更靠右 */
+    width: 35px;
+    /* 变小 */
+    height: 35px;
+    animation: sunRotate 20s linear infinite;
+    filter: drop-shadow(0 2px 8px rgba(255, 200, 0, 0.4));
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+@keyframes sunRotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.garden-hint {
+    display: none;
+    font-size: 11px;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: var(--spacing-sm);
+    font-style: italic;
+}
+
+/* Garden Controls */
+.garden-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 0 4px;
+}
+
+.control-btn {
+    flex: 1;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 0;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+/* Shovel Active State */
+.shovel-btn.active {
+    background: linear-gradient(135deg, #FFD6E4 0%, #FFEDF2 100%);
+    border: 3px solid #FF5C8D;
+    color: #FF5C8D;
+    box-shadow: 0 0 0 3px rgba(255, 92, 141, 0.2), inset 0 2px 8px rgba(255, 92, 141, 0.25);
+    transform: scale(1.05);
+    font-size: 24px;
+    /* emoji变大 */
+}
+
+/* Sun Animation Fast Rotate Zoom */
+@keyframes sunZoomRotate {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    30% {
+        transform: scale(4) rotate(360deg);
+        /* Zoom BIG & 旋转1圈 */
+    }
+
+    100% {
+        transform: scale(1) rotate(720deg);
+        /* 总计旋转2圈 */
+    }
+}
+
+.sun-icon.zooming {
+    animation: sunZoomRotate 0.8s ease-in-out !important;
+    /* 回归适中速度 */
+}
+
+/* Pepper Explosion Animation */
+.pepper-explosion {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    font-size: 15px;
+    /* 再大一点 */
+}
+
+@keyframes pepperExplode {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+    }
+
+    20% {
+        opacity: 0.5;
+        /* 更早开始渐变透明 */
+    }
+
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0.4) rotate(var(--rotate));
+        opacity: 0;
+    }
+}
+
+.pepper-particle {
+    animation: pepperExplode 1.0s ease-out forwards;
+}
+
+/* 动画稍久一点点 */
+
+/* ========================================
+   Bottom Status Bar (Sticky)
+   ======================================== */
+.status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-top: 0.5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px 24px 0 0;
+    padding: 14px var(--spacing-sm);
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+}
+
+.status-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    text-align: left;
+    padding-left: 8px;
+}
+
+.status-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(248, 250, 252, 0.6);
+    border-radius: var(--radius-md);
+}
+
+.user-avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.user1-avatar {
+    background: linear-gradient(135deg, #E8F4F8 0%, #C5E3ED 100%);
+}
+
+.user2-avatar {
+    background: linear-gradient(135deg, #F0E8F4 0%, #DCC5E8 100%);
+}
+
+.online-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    background: #CBD5E0;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.online-indicator.active {
+    background: #48BB78;
+    box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.2);
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.user-stats {
+    font-size: 10px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.divider {
+    margin: 0 3px;
+    opacity: 0.5;
+    font-size: 8px;
+}
+
+.reward-btn {
+    background: linear-gradient(135deg, #FF5C8D 0%, #FF8FB5 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 7px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 92, 141, 0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.reward-btn:hover:not(.disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 92, 141, 0.4);
+}
+
+.reward-btn.disabled {
+    background: linear-gradient(135deg, #CBD5E0 0%, #E2E8F0 100%);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.reward-text {
+    display: block;
+}
+
+/* ========================================
+   Modal
+   ======================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: var(--spacing-lg);
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 32px 24px;
+    max-width: 90%;
+    width: 340px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-icon {
+    font-size: 60px;
+    margin-bottom: 16px;
+    animation: celebrateIcon 0.6s ease-in-out;
+}
+
+@keyframes celebrateIcon {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(10deg);
+    }
+}
+
+.modal-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+.modal-reward {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255, 192, 203, 0.15) 0%, rgba(255, 192, 203, 0.05) 100%);
+    border-radius: 16px;
+    border: 2px solid rgba(255, 192, 203, 0.2);
+}
+
+.modal-coin-icon {
+    width: 32px;
+    height: 32px;
+    animation: coinBounce 0.6s ease-in-out;
+    filter: drop-shadow(0 2px 8px rgba(255, 193, 7, 0.3));
+}
+
+@keyframes coinBounce {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.1);
+    }
+}
+
+.reward-amount {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #FF5C8D 0%, #FF8FB5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.modal-description {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.modal-btn {
+    background: linear-gradient(135deg, #FF5C8D 0%, #FF8FB5 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 6px 20px rgba(255, 92, 141, 0.35);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    letter-spacing: 0.5px;
+}
+
+.modal-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 92, 141, 0.45);
+}
+
+.modal-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(255, 92, 141, 0.3);
+}
+
+/* ========================================
+   Toast
+   ======================================== */
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-full);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    opacity: 0;
+    z-index: 3000;
+    transition: all 0.3s ease;
+}
+
+.toast.active {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast-coin-icon {
+    width: 20px;
+    height: 20px;
+    filter: drop-shadow(0 2px 6px rgba(255, 193, 7, 0.3));
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 390px) {
+    body {
+        padding: var(--spacing-sm);
+    }
+
+    .store-grid {
+        gap: var(--spacing-sm);
+    }
+
+    .flower-name {
+        font-size: 12px;
+    }
+
+    .user-stats {
+        font-size: 11px;
+    }
+}
+
+@media (min-width: 768px) {
+    body {
+        max-width: 390px;
+        margin: 0 auto;
+    }
+
+    .status-bar {
+        max-width: 390px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}

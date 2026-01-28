@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+
+        .container {
+            position: relative;
+            width: 800px;
+            /* 假设一个宽度，稍后调整 */
+            margin: 0 auto;
+        }
+
+        .bg-image {
+            width: 100%;
+            display: block;
+            opacity: 0.8;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+
+            /* TODO: 下面这些变换参数需要根据图片实际情况调整 */
+            /* 这种变换通常用于模拟等距视角 */
+            /* transform: rotateX(60deg) rotateZ(-45deg); */
+            /* transform-style: preserve-3d; */
+        }
+
+        .cell {
+            border: 1px solid red;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: red;
+            font-weight: bold;
+        }
+
+        /* 控制面板 */
+        .controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ccc;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="controls">
+        <p>Image: image(9).png (Isomentric)</p>
+        <label>Rotate Z: <input type="range" id="rotateZ" min="-180" max="180" value="-45"></label><span
+            id="valZ">-45</span>deg<br>
+        <label>Rotate X: <input type="range" id="rotateX" min="0" max="90" value="60"></label><span
+            id="valX">60</span>deg<br>
+        <label>Scale: <input type="range" id="scale" min="0.5" max="2" step="0.01" value="1"></label><span
+            id="valS">1</span><br>
+        <label>Top: <input type="range" id="top" min="-100" max="100" value="0"></label><span id="valT">0</span>%<br>
+        <label>Left: <input type="range" id="left" min="-100" max="100" value="0"></label><span id="valL">0</span>%<br>
+        <label>Width: <input type="range" id="width" min="50" max="150" value="100"></label><span
+            id="valW">100</span>%<br>
+        <label>Height: <input type="range" id="height" min="50" max="150" value="100"></label><span
+            id="valH">100</span>%<br>
+    </div>
+
+    <div class="container" id="gameContainer">
+        <!-- 引用本地图片 -->
+        <img src="image/image(9).png" class="bg-image">
+
+        <div class="grid-overlay" id="grid">
+            <!-- JS生成格子 -->
+        </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('grid');
+        for (let i = 0; i < 54; i++) {
+            const div = document.createElement('div');
+            div.className = 'cell';
+            div.textContent = i;
+            grid.appendChild(div);
+        }
+
+        // 控制逻辑
+        const inputs = document.querySelectorAll('input');
+        function updateTransform() {
+            const rZ = document.getElementById('rotateZ').value;
+            const rX = document.getElementById('rotateX').value;
+            const s = document.getElementById('scale').value;
+            const t = document.getElementById('top').value;
+            const l = document.getElementById('left').value;
+            const w = document.getElementById('width').value;
+            const h = document.getElementById('height').value;
+
+            document.getElementById('valZ').textContent = rZ;
+            document.getElementById('valX').textContent = rX;
+            document.getElementById('valS').textContent = s;
+            document.getElementById('valT').textContent = t;
+            document.getElementById('valL').textContent = l;
+            document.getElementById('valW').textContent = w;
+            document.getElementById('valH').textContent = h;
+
+            grid.style.transform = `rotateX(${rX}deg) rotateZ(${rZ}deg) scale(${s})`;
+            grid.style.top = t + '%';
+            grid.style.left = l + '%';
+            grid.style.width = w + '%';
+            grid.style.height = h + '%';
+        }
+        inputs.forEach(input => input.addEventListener('input', updateTransform));
+
+        // 初始调用
+        updateTransform();
+    </script>
+</body>
+
+</html>

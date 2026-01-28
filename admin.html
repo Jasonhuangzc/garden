@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Admin</title>
+    <style>
+        :root {
+            --primary: #FF5C8D;
+            --primary-dark: #D6336C;
+            --bg: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text: #212529;
+            --danger: #DC3545;
+            --danger-hover: #BB2D3B;
+            --success: #198754;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: var(--text);
+            border-bottom: 2px solid #F0F0F0;
+            padding-bottom: 8px;
+        }
+
+        .action-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn.danger:hover {
+            background: var(--danger-hover);
+        }
+
+        .action-btn.secondary {
+            background: #E9ECEF;
+            color: #495057;
+        }
+
+        .action-btn.secondary:hover {
+            background: #DEE2E6;
+        }
+
+        .status-msg {
+            margin-top: 12px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .status-msg.success {
+            color: var(--success);
+        }
+
+        .status-msg.error {
+            color: var(--danger);
+        }
+
+        #status-display {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #E0E0E0;
+        }
+
+        .status-item .label {
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        .status-item .value {
+            font-family: monospace;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🛠️ Garden Admin</h1>
+
+        <div class="card">
+            <h2>Current Status</h2>
+            <div id="status-display">
+                <div class="status-item">
+                    <span class="label">Last Reset:</span>
+                    <span class="value" id="last-reset-time">Loading...</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Garden Plots:</span>
+                    <span class="value" id="garden-plots-count">Loading...</span>
+                </div>
+            </div>
+            <button id="refresh-btn" class="action-btn secondary">Refresh Status</button>
+        </div>
+
+        <div class="card">
+            <h2>Test Controls</h2>
+            <p style="font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 20px;">
+                <strong>Simulation Mode:</strong> Forces a "New Day" state by clearing coins, emptying the garden,
+                and resetting daily points status. This allows you to re-claim points from existing word counts.
+            </p>
+
+            <button id="reset-daily-btn" class="action-btn danger">
+                ⚠️ Reset Daily Data (Fresh Start)
+            </button>
+            <p id="reset-status" class="status-msg"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { resetDailyData, db } from './game-logic.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // UI Elements
+        const resetBtn = document.getElementById('reset-daily-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const statusMsg = document.getElementById('reset-status');
+
+        // Reset Handler
+        resetBtn.addEventListener('click', async () => {
+            if (confirm('🚨 CONFIRM RESET?\n\nThis will WIPE all coins and garden progress.\nIt simulates a fresh 4:30 AM start.')) {
+                resetBtn.disabled = true;
+                resetBtn.textContent = 'Processing...';
+
+                const result = await resetDailyData();
+
+                if (result.success) {
+                    statusMsg.textContent = '✅ Reset Complete! Ready for fresh testing.';
+                    statusMsg.className = 'status-msg success';
+                    loadStatus();
+                } else {
+                    statusMsg.textContent = '❌ Error: ' + result.error;
+                    statusMsg.className = 'status-msg error';
+                }
+
+                resetBtn.disabled = false;
+                resetBtn.textContent = '⚠️ Reset Daily Data (Fresh Start)';
+            }
+        });
+
+        // Status Loader
+        async function loadStatus() {
+            try {
+                // Get Reset Info
+                const resetRef = doc(db, 'system', 'reset');
+                const resetSnap = await getDoc(resetRef);
+                if (resetSnap.exists()) {
+                    const t = resetSnap.data().lastResetTime;
+                    document.getElementById('last-reset-time').textContent = t ? new Date(t).toLocaleString() : 'Never';
+                } else {
+                    document.getElementById('last-reset-time').textContent = 'No record';
+                }
+
+                // Get Garden Info
+                const gardenRef = doc(db, 'garden', 'plots');
+                const gardenSnap = await getDoc(gardenRef);
+                if (gardenSnap.exists()) {
+                    const data = gardenSnap.data();
+                    document.getElementById('garden-plots-count').textContent = `${data.occupiedPlots || 0} / ${data.maxPlots || 54}`;
+                } else {
+                    document.getElementById('garden-plots-count').textContent = 'Not initialized';
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('last-reset-time').textContent = 'Error';
+            }
+        }
+
+        refreshBtn.addEventListener('click', loadStatus);
+
+        // Initial load
+        loadStatus();
+    </script>
+</body>
+
+</html>

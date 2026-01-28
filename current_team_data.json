@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-01-28 21:24:21",
+  "members": [
+    {
+      "user_id": "user1",
+      "姓名": "ida#",
+      "avatar": "image/avatar_ida.jpg",
+      "gender": "female",
+      "背单词数量": 44,
+      "背单词时间(分钟)": 22,
+      "是否为本人": "否",
+      "打卡天数": 17
+    },
+    {
+      "user_id": "user2",
+      "姓名": "背够2w个",
+      "avatar": "image/avatar_beigou2w.jpg",
+      "gender": "male",
+      "背单词数量": 59,
+      "背单词时间(分钟)": 61,
+      "是否为本人": "是",
+      "打卡天数": 17
+    }
+  ],
+  "source": "backend_api"
+}

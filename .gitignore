@@ -1,0 +1,5 @@
+.vercel
+
+# Firebase Admin SDK - NEVER COMMIT
+garden-c4155-firebase-adminsdk*.json
+serviceAccountKey.json

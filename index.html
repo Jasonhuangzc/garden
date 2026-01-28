@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Vocabulary Garden</title>
+    <!-- Preload critical resources -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="image/coin_icon.png" as="image">
+    <link rel="preload" href="image/shop_icon.png" as="image">
+    <link rel="preload" href="image/garden_icon.png" as="image">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Garden Store Section -->
+    <section class="store-section">
+        <div class="card store-card">
+            <div class="card-header">
+                <h2 class="section-title">
+                    <img src="image/shop_icon.png" alt="Shop" class="title-icon">
+                    Flower Shop
+                </h2>
+                <div class="pts-badge">
+                    <img src="image/coin_icon.png" alt="Coins" class="coin-icon">
+                    <span class="pts-text">...</span>
+                </div>
+            </div>
+
+            <div class="store-grid">
+                <!-- Rose Bud -->
+                <div class="store-item">
+                    <img src="image/image (4).png" alt="Rose" class="flower-icon" loading="lazy">
+                    <h3 class="flower-name">Rose Bud</h3>
+                    <p class="flower-price">5 Pts</p>
+                    <button class="redeem-btn">Redeem</button>
+                </div>
+
+                <!-- Sunflower -->
+                <div class="store-item">
+                    <img src="image/image (5).png" alt="Sunflower" class="flower-icon" loading="lazy">
+                    <h3 class="flower-name">Sunflower</h3>
+                    <p class="flower-price">5 Pts</p>
+                    <button class="redeem-btn">Redeem</button>
+                </div>
+
+                <!-- Tulips -->
+                <div class="store-item">
+                    <img src="image/image (6).png" alt="Tulip" class="flower-icon" loading="lazy">
+                    <h3 class="flower-name">Tulips</h3>
+                    <p class="flower-price">5 Pts</p>
+                    <button class="redeem-btn">Redeem</button>
+                </div>
+
+                <!-- Lavender -->
+                <div class="store-item">
+                    <img src="image/image (7).png" alt="Lavender" class="flower-icon" loading="lazy">
+                    <h3 class="flower-name">Lavender</h3>
+                    <p class="flower-price">5 Pts</p>
+                    <button class="redeem-btn">Redeem</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Garden Section -->
+    <section class="garden-section">
+        <div class="card garden-card">
+            <div class="card-header">
+                <h2 class="section-title">
+                    <img src="image/garden_icon.png" alt="Garden" class="title-icon">
+                    Chili Garden
+                </h2>
+                <div class="garden-info">
+                    <span id="garden-occupied">0</span>/54 planted
+                </div>
+            </div>
+
+            <div class="garden-display">
+                <!-- 花园背景图 (等距网格) -->
+                <img src="image/image(9).png" alt="Garden Grid" class="garden-bg-image" fetchpriority="high">
+
+                <!-- 动态花园网格 (覆盖在图片上) -->
+                <div class="garden-grid" id="gardenGrid">
+                    <!-- JavaScript 将动态生成54个格子 -->
+                </div>
+
+                <img src="image/image(10).png" alt="Sun" class="sun-icon" loading="lazy">
+            </div>
+
+            <div class="garden-controls">
+                <button class="control-btn shovel-btn" id="shovelBtn" title="铲除花朵">
+                    🥄
+                </button>
+                <button class="control-btn sun-btn" id="sunBtn" title="阳光普照">
+                    ☀️
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Status Bar (Sticky) -->
+    <section class="status-bar">
+        <h3 class="status-title">真诚的壹个辣椒</h3>
+
+        <div class="status-content" id="teamStatusContent">
+            <!-- User 1 - ida# -->
+            <div class="user-row" data-user-id="user1">
+                <div class="user-avatar-wrapper">
+                    <div class="user-avatar user1-avatar">
+                        <img src="image/avatar_ida.jpg" alt="User 1" class="avatar-img" loading="lazy">
+                    </div>
+                    <div class="online-indicator active"></div>
+                </div>
+
+                <div class="user-info">
+                    <h4 class="user-name" id="user1-name">ida#</h4>
+                    <p class="user-stats" id="user1-stats">
+                        <span id="user1-time">0</span>/15 min
+                        <span class="divider">●</span>
+                        <span id="user1-words">0</span>/10 words
+                    </p>
+                </div>
+
+                <button class="reward-btn disabled" id="user1-reward-btn">
+                    <span class="reward-text">Reward (<span id="user1-reward-progress">0/10</span>)</span>
+                </button>
+            </div>
+
+            <!-- User 2 - 背够2w个 -->
+            <div class="user-row" data-user-id="user2">
+                <div class="user-avatar-wrapper">
+                    <div class="user-avatar user2-avatar">
+                        <img src="image/avatar_beigou2w.jpg" alt="User 2" class="avatar-img" loading="lazy">
+                    </div>
+                    <div class="online-indicator"></div>
+                </div>
+
+                <div class="user-info">
+                    <h4 class="user-name" id="user2-name">背够2w个</h4>
+                    <p class="user-stats" id="user2-stats">
+                        <span id="user2-time">0</span>/15 min
+                        <span class="divider">●</span>
+                        <span id="user2-words">0</span>/10 words
+                    </p>
+                </div>
+
+                <button class="reward-btn disabled" id="user2-reward-btn">
+                    <span class="reward-text">Reward (<span id="user2-reward-progress">0/10</span>)</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reward Modal -->
+    <div class="modal-overlay" id="rewardModal">
+        <div class="modal-content">
+            <div class="modal-icon">🎉</div>
+            <h3 class="modal-title">Great Job!</h3>
+            <div class="modal-reward">
+                <img src="image/coin_icon.png" alt="Coins" class="modal-coin-icon">
+                <span class="reward-amount">+50 pts</span>
+            </div>
+            <p class="modal-description">可在商店兑换美丽的花朵</p>
+            <button class="modal-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span>+50 pts</span>
+    </div>
+
+    <!-- 引入JavaScript模块 -->
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==================== 用户数据 ====================
+    // 允许所有人读取，暂时允许写入（后续可加认证）
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if true;  // 开发阶段开放，生产环境建议加认证
+    }
+    
+    // ==================== 共享金币账户 ====================
+    match /sharedAccount/{document} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // ==================== 花朵商品 ====================
+    match /flowers/{flowerId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // ==================== 花园状态 ====================
+    match /garden/{document} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // ==================== 每日学习进度（保留原有） ====================
+    match /dailyProgress/{document} {
+      allow read: if true;
+      allow write: if true;
+      
+      // 数据验证（可选）
+      allow create, update: if request.resource.data.keys().hasAll(['date', 'user1WordCount', 'user2WordCount', 'totalCoins'])
+        && request.resource.data.user1WordCount is int
+        && request.resource.data.user2WordCount is int
+        && request.resource.data.totalCoins is int
+        && request.resource.data.user1WordCount >= 0
+        && request.resource.data.user2WordCount >= 0
+        && request.resource.data.totalCoins >= 0;
+    }
+    
+    // ==================== 默认规则 ====================
+    // 拒绝其他所有访问
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

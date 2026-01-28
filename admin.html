@@ -157,16 +157,36 @@
             </button>
             <p id="reset-status" class="status-msg"></p>
         </div>
+
+        <div class="card">
+            <h2>📥 导入抓包数据</h2>
+            <p style="font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 15px;">
+                粘贴不背单词抓包的 JSON 数据，格式示例：<br>
+                <code
+                    style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:12px;">{"user1": {"words": 100, "time": 30}, "user2": {"words": 80, "time": 25}}</code>
+            </p>
+            <textarea id="capture-data"
+                placeholder='{"user1": {"words": 0, "time": 0}, "user2": {"words": 0, "time": 0}}'
+                style="width: 100%; height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 13px; resize: vertical; box-sizing: border-box;"></textarea>
+            <button id="import-data-btn" class="action-btn primary"
+                style="margin-top: 12px; background: var(--primary); color: white;">
+                📤 导入并更新数据
+            </button>
+            <p id="import-status" class="status-msg"></p>
+        </div>
     </div>
 
     <script type="module">
-        import { resetDailyData, db } from './game-logic.js';
+        import { resetDailyData, updateUserWordData, db } from './game-logic.js';
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // UI Elements
         const resetBtn = document.getElementById('reset-daily-btn');
         const refreshBtn = document.getElementById('refresh-btn');
         const statusMsg = document.getElementById('reset-status');
+        const importBtn = document.getElementById('import-data-btn');
+        const captureDataEl = document.getElementById('capture-data');
+        const importStatusMsg = document.getElementById('import-status');
 
         // Reset Handler
         resetBtn.addEventListener('click', async () => {
@@ -187,6 +207,52 @@
 
                 resetBtn.disabled = false;
                 resetBtn.textContent = '⚠️ Reset Daily Data (Fresh Start)';
+            }
+        });
+
+        // Import Handler
+        importBtn.addEventListener('click', async () => {
+            const rawData = captureDataEl.value.trim();
+            if (!rawData) {
+                importStatusMsg.textContent = '⚠️ 请先粘贴 JSON 数据';
+                importStatusMsg.className = 'status-msg error';
+                return;
+            }
+
+            try {
+                const data = JSON.parse(rawData);
+                importBtn.disabled = true;
+                importBtn.textContent = '导入中...';
+
+                let successCount = 0;
+
+                // 处理 user1
+                if (data.user1) {
+                    const words = data.user1.words || data.user1.wordsCount || 0;
+                    const time = data.user1.time || data.user1.studyTime || 0;
+                    const result = await updateUserWordData('user1', words, time);
+                    if (result.success) successCount++;
+                }
+
+                // 处理 user2
+                if (data.user2) {
+                    const words = data.user2.words || data.user2.wordsCount || 0;
+                    const time = data.user2.time || data.user2.studyTime || 0;
+                    const result = await updateUserWordData('user2', words, time);
+                    if (result.success) successCount++;
+                }
+
+                importStatusMsg.textContent = `✅ 成功导入 ${successCount} 个用户的数据！`;
+                importStatusMsg.className = 'status-msg success';
+                loadStatus();
+
+            } catch (e) {
+                console.error('Import error:', e);
+                importStatusMsg.textContent = '❌ JSON 解析失败: ' + e.message;
+                importStatusMsg.className = 'status-msg error';
+            } finally {
+                importBtn.disabled = false;
+                importBtn.textContent = '📤 导入并更新数据';
             }
         });
 

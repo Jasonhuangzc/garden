@@ -305,7 +305,7 @@ export async function buyFlower(flowerId, userId) {
             const currentCoins = coinsData.totalCoins || 0;
 
             if (currentCoins < flower.price) {
-                throw new Error(`金币不足 (需要 ${flower.price}, 拥有 ${currentCoins})`);
+                throw new Error(`金币不足！每朵花需要 5pts，当前拥有 ${currentCoins}pts`);
             }
 
             // 2. 检查花园空位

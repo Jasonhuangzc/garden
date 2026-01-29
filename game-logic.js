@@ -474,8 +474,17 @@ export async function getGardenStatus() {
  */
 export async function syncWordData() {
     try {
-        // 后端会定时把抓包数据写入 Firestore
-        // 前端只需读取数据库，不再依赖本地 JSON
+        // 用户访问时触发 Serverless 函数同步抓包数据
+        try {
+            const response = await fetch('/api/sync-data', { cache: 'no-store' });
+            if (!response.ok) {
+                console.warn(`⚠️ 同步接口失败: ${response.status}`);
+            }
+        } catch (error) {
+            console.warn('⚠️ 同步接口请求失败:', error);
+        }
+
+        // 读取数据库，确保后续 UI 使用最新数据
         const user1Ref = doc(db, 'users', 'user1');
         const user2Ref = doc(db, 'users', 'user2');
 

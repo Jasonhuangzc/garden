@@ -12,7 +12,6 @@ import {
     syncWordData,
     getGardenStatus,
     watchRealtimeData,
-    checkAndResetDaily,
     FLOWERS
 } from './game-logic.js';
 
@@ -97,36 +96,28 @@ async function initializeGame() {
             showLoadingState();
         }
 
-        // 1. 检查是否需要每日重置
-        await checkAndResetDaily();
-
-        // 2. 初始化数据库
+        // 1. 初始化数据库
         const initResult = await initializeGameDatabase();
         if (!initResult.success) {
             throw new Error('数据库初始化失败');
         }
 
-        // 3. 同步单词数据，确保首屏展示最新数据
+        // 2. 同步单词数据，确保首屏展示最新数据
         await syncWordData();
         console.log('✅ 单词数据同步完成');
 
-        // 4. 加载游戏数据（更新UI）
+        // 3. 加载游戏数据（更新UI）
         await loadGameData();
 
-        // 5. 设置实时监听
+        // 4. 设置实时监听
         setupRealtimeListeners();
 
-        // 6. 定时同步单词数据
+        // 5. 定时同步单词数据
         setInterval(async () => {
             console.log('🔄 后台静默同步...');
             await syncWordData();
             await loadGameData();  // 同步后更新UI
-        }, 60000); // 每1分钟同步一次
-
-        // 7. 定时检查每日重置
-        setInterval(async () => {
-            await checkAndResetDaily();
-        }, 60000);
+        }, 10 * 60 * 1000); // 每10分钟同步一次
 
         gameState.isInitialized = true;
         gameState.isLoading = false;

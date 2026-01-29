@@ -1,0 +1,10 @@
+{
+  "name": "garden-serverless",
+  "private": true,
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}

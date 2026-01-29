@@ -10,19 +10,26 @@ let initError = null;
 
 try {
     if (!getApps().length) {
-        const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+        let credential;
 
-        if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !privateKey) {
-            throw new Error('Missing Firebase credentials');
-        }
-
-        initializeApp({
-            credential: cert({
+        if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+            // 方式1: 完整JSON字符串
+            const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+            credential = cert(serviceAccount);
+        } else {
+            // 方式2: 分开的环境变量
+            const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+            if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !privateKey) {
+                throw new Error('Missing Firebase credentials');
+            }
+            credential = cert({
                 projectId: process.env.FIREBASE_PROJECT_ID,
                 clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
                 privateKey: privateKey
-            })
-        });
+            });
+        }
+
+        initializeApp({ credential });
     }
     db = getFirestore();
 } catch (e) {

@@ -120,7 +120,7 @@ export async function getUserData(userId) {
  * 更新用户背单词数据
  * 只有新增的单词才会转化为积分（防止重复收取）
  */
-export async function updateUserWordData(userId, wordsCount, studyTime) {
+export async function updateUserWordData(userId, wordsCount, studyTime, checkInDays) {
     try {
         const userRef = doc(db, 'users', userId);
 
@@ -147,13 +147,19 @@ export async function updateUserWordData(userId, wordsCount, studyTime) {
         const additionalPoints = newWords * GAME_CONFIG.POINTS_PER_WORD;
         const newPoints = currentPoints + additionalPoints;
 
-        await updateDoc(userRef, {
+        const updatePayload = {
             currentPoints: newPoints,              // 累积积分
             totalWordsToday: wordsCount,           // 今日总单词数
             lastSyncedWords: wordsCount,           // 记录本次同步的单词数
             studyTimeToday: studyTime,
             lastUpdated: new Date().toISOString()
-        });
+        };
+
+        if (typeof checkInDays === 'number') {
+            updatePayload.checkInDays = checkInDays;
+        }
+
+        await updateDoc(userRef, updatePayload);
 
         if (newWords > 0) {
             console.log(`✅ ${userId} 新增${newWords}个单词 → +${additionalPoints}积分（总积分: ${newPoints}）`);
@@ -468,34 +474,13 @@ export async function getGardenStatus() {
  */
 export async function syncWordData() {
     try {
-        // 后端 Python 脚本已经直接将数据写入 Firestore
-        // 前端只需要刷新用户数据即可（实时监听会自动更新）
-        // 这里显式获取一次最新数据，确保UI同步
-
+        // 后端会定时把抓包数据写入 Firestore
+        // 前端只需读取数据库，不再依赖本地 JSON
         const user1Ref = doc(db, 'users', 'user1');
         const user2Ref = doc(db, 'users', 'user2');
 
-        const [user1Snap, user2Snap] = await Promise.all([
-            getDoc(user1Ref),
-            getDoc(user2Ref)
-        ]);
-
-        // 验证数据来源（后端写入的数据会有 lastSyncSource 标记）
-        if (user1Snap.exists()) {
-            const data = user1Snap.data();
-            if (data.lastSyncSource === 'backend_api') {
-                console.log('[Sync] user1 data verified from backend');
-            }
-        }
-
-        if (user2Snap.exists()) {
-            const data = user2Snap.data();
-            if (data.lastSyncSource === 'backend_api') {
-                console.log('[Sync] user2 data verified from backend');
-            }
-        }
-
-        console.log('[OK] Word data sync check completed');
+        await Promise.all([getDoc(user1Ref), getDoc(user2Ref)]);
+        console.log('[OK] Word data sync verified via Firestore');
         return { success: true };
     } catch (error) {
         console.error('[ERR] Sync check failed:', error);
@@ -594,7 +579,8 @@ export async function resetDailyData() {
             await updateDoc(userRef, {
                 currentPoints: 0,              // 积分清零
                 lastSyncedWords: 0,            // 强制归零（方便测试重新领分）
-                // totalWordsToday: 0,         // 保持原样或归零皆可，sync会覆盖
+                totalWordsToday: 0,
+                studyTimeToday: 0,
                 lastUpdated: new Date().toISOString()
             });
         };

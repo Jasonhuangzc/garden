@@ -106,10 +106,9 @@ async function initializeGame() {
             throw new Error('数据库初始化失败');
         }
 
-        // 3. 后台同步单词数据（不阻塞 UI）
-        syncWordData().then(() => {
-            console.log('✅ 单词数据同步完成');
-        }).catch(e => console.warn('同步失败:', e));
+        // 3. 同步单词数据，确保首屏展示最新数据
+        await syncWordData();
+        console.log('✅ 单词数据同步完成');
 
         // 4. 加载游戏数据（更新UI）
         await loadGameData();

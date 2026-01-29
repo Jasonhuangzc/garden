@@ -41,6 +41,30 @@ let gameState = {
 // 缓存Key
 const CACHE_KEY = 'garden_game_cache';
 
+// ========================================
+// 调用 Vercel Serverless API 同步数据
+// ========================================
+async function callSyncAPI() {
+    try {
+        console.log('📡 调用 /api/sync-data ...');
+        const response = await fetch('/api/sync-data', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            throw new Error(`API 返回 ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('✅ API 同步结果:', result);
+        return result;
+    } catch (error) {
+        console.warn('⚠️ API 同步失败 (将使用缓存数据):', error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 // 从缓存加载数据（快速显示，避免闪烁0）
 function loadFromCache() {
     try {
@@ -106,10 +130,10 @@ async function initializeGame() {
             throw new Error('数据库初始化失败');
         }
 
-        // 3. 后台同步单词数据（不阻塞 UI）
-        syncWordData().then(() => {
-            console.log('✅ 单词数据同步完成');
-        }).catch(e => console.warn('同步失败:', e));
+        // 3. 调用 Vercel Serverless API 同步单词数据
+        callSyncAPI().then(() => {
+            console.log('✅ 单词数据同步完成 (via Vercel API)');
+        }).catch(e => console.warn('API同步失败:', e));
 
         // 4. 加载游戏数据（更新UI）
         await loadGameData();
@@ -117,10 +141,10 @@ async function initializeGame() {
         // 5. 设置实时监听
         setupRealtimeListeners();
 
-        // 6. 定时同步单词数据
+        // 6. 定时调用 API 同步单词数据
         setInterval(async () => {
             console.log('🔄 后台静默同步...');
-            await syncWordData();
+            await callSyncAPI();
             await loadGameData();  // 同步后更新UI
         }, 60000); // 每1分钟同步一次
 

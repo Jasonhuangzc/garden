@@ -125,10 +125,8 @@ export default async function handler(req, res) {
             });
         }
 
-        const sid = process.env.BUBEIDAN_SID;
-        if (!sid) {
-            return res.status(500).json({ success: false, error: 'SID not configured' });
-        }
+        // 不背单词 SID
+        const sid = "k0t5CNBsU5GDZc1N84CAyOgO7xgq03+uYbSc8xTOpCgPU5y/uRUw0Ui38ICaeC89p2Bo/LONDpihP6+v6X3T2KsbOTY5yrlfApuKYjiysYplM3a7mB4dhGL5q/wLptL7aMaH1gGZelkdNqYP/sdojTJL9qPtSfOSHQn/XH5ZDZedyP7CvUeuhzAlyPQPUEZ9ErSXmzaocEUsXa1zL9XvBXqhsJAIk20f358zKsMsmXR0wcx7H5kgagYj9ev2QAvkNGakVdVwOeB6ArKVo1WXW0h0fH3RTieWXxNAO4YRiCO6n1jD/fwujEMwrdFVDvQNrB2F8sjIQSEcy+7DTEC0Qg==";
 
         console.log('[Sync] Fetching data from BuBeiDan API...');
         const data = await fetchBuBeiDanData(sid);

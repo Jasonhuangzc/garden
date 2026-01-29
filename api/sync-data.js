@@ -80,14 +80,40 @@ async function updateUserInFirestore(userId, wordsCount, studyTime, checkInDays)
     }
 
     const currentData = userDoc.data();
-    const oldWords = currentData.lastSyncedWords || 0;
-    const newWords = wordsCount - oldWords;
+    const lastSyncedWords = currentData.lastSyncedWords || 0;
     const currentPoints = currentData.currentPoints || 0;
-
-    // 计算新增积分
+    
+    // 计算新增单词数
+    let newWords = wordsCount - lastSyncedWords;
+    
+    // 严格检查：防止异常积分增加
+    // 1. 新增单词数不能为负（可能是API返回异常数据）
+    // 2. 单次同步最多增加100个单词的积分（防止缓存问题导致异常）
+    // 3. 如果这是今天第一次同步（lastSyncedWords=0），不给积分
+    if (newWords < 0) {
+        console.log(`[WARN] ${userId}: 单词数减少 (${lastSyncedWords} -> ${wordsCount})，跳过积分`);
+        newWords = 0;
+    }
+    
+    if (lastSyncedWords === 0 && wordsCount > 0) {
+        // 今天第一次同步，只记录基准值，不给积分
+        console.log(`[INFO] ${userId}: 首次同步，设置基准值 ${wordsCount}，不发放积分`);
+        await userRef.update({
+            totalWordsToday: wordsCount,
+            studyTimeToday: studyTime,
+            checkInDays: checkInDays,
+            lastSyncedWords: wordsCount,  // 更新基准值
+            lastUpdated: new Date().toISOString(),
+            lastSyncSource: 'vercel_api'
+        });
+        return true;
+    }
+    
+    // 限制单次最多获得 100 积分（对应100个新增单词）
+    const MAX_POINTS_PER_SYNC = 100;
     let pointsToAdd = 0;
     if (newWords > 0) {
-        pointsToAdd = Math.floor(newWords / 10) * 10;
+        pointsToAdd = Math.min(Math.floor(newWords / 10) * 10, MAX_POINTS_PER_SYNC);
     }
 
     await userRef.update({
@@ -95,6 +121,7 @@ async function updateUserInFirestore(userId, wordsCount, studyTime, checkInDays)
         studyTimeToday: studyTime,
         checkInDays: checkInDays,
         currentPoints: currentPoints + pointsToAdd,
+        lastSyncedWords: wordsCount,  // 更新已同步的单词数
         lastUpdated: new Date().toISOString(),
         lastSyncSource: 'vercel_api'
     });

@@ -6,6 +6,8 @@ import time
 import threading
 import subprocess
 
+from daily_reset import check_and_reset_daily
+
 PORT = 8000
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,6 +23,7 @@ class DataSyncScheduler(threading.Thread):
         print(f"⏰ [Scheduler] 自动同步任务已启动 (每{self.interval}秒)")
         while not self.stop_event.is_set():
             self.fetch_data()
+            self.reset_daily()
             time.sleep(self.interval)
 
     def fetch_data(self):
@@ -54,6 +57,14 @@ class DataSyncScheduler(threading.Thread):
             print(f"⚠️ [Scheduler] 抓取超时 (>30秒)")
         except Exception as e:
             print(f"⚠️ [Scheduler] 调度器错误: {type(e).__name__}: {e}")
+
+    def reset_daily(self):
+        try:
+            result = check_and_reset_daily()
+            if result.get("success") and not result.get("skipped"):
+                print(f"✅ [Scheduler] 已执行每日重置 ({result.get('resetTime')})")
+        except Exception as e:
+            print(f"⚠️ [Scheduler] 重置任务错误: {type(e).__name__}: {e}")
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):

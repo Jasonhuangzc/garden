@@ -132,7 +132,12 @@ export default async function handler(req, res) {
         const data = await fetchBuBeiDanData(sid);
 
         if (data?.data_body?.code !== 0) {
-            return res.status(500).json({ success: false, error: 'API returned error' });
+            return res.status(500).json({
+                success: false,
+                error: 'API returned error',
+                code: data?.data_body?.code,
+                msg: data?.data_body?.msg || 'Unknown error'
+            });
         }
 
         const members = data.data_body.group.members;

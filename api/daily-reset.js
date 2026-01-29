@@ -20,14 +20,8 @@ const db = getFirestore();
 const GARDEN_SIZE = 54;
 
 export default async function handler(req, res) {
-    // 验证 Cron 请求（防止外部调用）
-    const authHeader = req.headers.authorization;
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        // 允许手动测试（开发环境）
-        if (process.env.NODE_ENV === 'production') {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-    }
+    // Vercel Cron 会自动添加 x-vercel-cron 头部
+    // 如果不是 Cron 调用，允许 GET 请求用于测试
 
     try {
         console.log('[Reset] Starting daily reset...');

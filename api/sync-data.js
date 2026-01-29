@@ -5,17 +5,30 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
 // 初始化 Firebase Admin SDK
-if (!getApps().length) {
-    initializeApp({
-        credential: cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-        })
-    });
-}
+let db = null;
+let initError = null;
 
-const db = getFirestore();
+try {
+    if (!getApps().length) {
+        const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+        if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !privateKey) {
+            throw new Error('Missing Firebase credentials');
+        }
+
+        initializeApp({
+            credential: cert({
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                privateKey: privateKey
+            })
+        });
+    }
+    db = getFirestore();
+} catch (e) {
+    initError = e.message;
+    console.error('Firebase init error:', e);
+}
 
 // 用户映射
 const USER_MAPPING = {
@@ -94,6 +107,17 @@ export default async function handler(req, res) {
     }
 
     try {
+        // 检查 Firebase 初始化
+        if (initError || !db) {
+            return res.status(500).json({
+                success: false,
+                error: initError || 'Firebase not initialized',
+                hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
+                hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+                hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY
+            });
+        }
+
         const sid = process.env.BUBEIDAN_SID;
         if (!sid) {
             return res.status(500).json({ success: false, error: 'SID not configured' });

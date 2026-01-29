@@ -9,6 +9,11 @@ from flask_cors import CORS
 from bubeidan_reader_simple import BuBeiDanReader
 from datetime import datetime
 import os
+import threading
+import time
+
+from daily_reset import check_and_reset_daily
+from fetch_current_data import fetch_and_sync
 
 app = Flask(__name__)
 CORS(app)  # 允许跨域请求
@@ -19,6 +24,39 @@ SID = os.getenv('BUBEIDAN_SID',
 
 # 简单的缓存
 _cache = {'data': None, 'time': None}
+
+
+class DataSyncScheduler(threading.Thread):
+    def __init__(self, interval=60):
+        super().__init__()
+        self.interval = interval
+        self.daemon = True
+        self.stop_event = threading.Event()
+
+    def run(self):
+        print(f"⏰ [Scheduler] 自动同步任务已启动 (每{self.interval}秒)")
+        while not self.stop_event.is_set():
+            self.fetch_data()
+            self.reset_daily()
+            time.sleep(self.interval)
+
+    def fetch_data(self):
+        try:
+            print(f"🔄 [Scheduler] 正在抓取最新数据 ({datetime.now().strftime('%H:%M:%S')})...")
+            if fetch_and_sync():
+                print("✅ [Scheduler] 数据同步完成")
+            else:
+                print("⚠️ [Scheduler] 数据同步失败")
+        except Exception as e:
+            print(f"⚠️ [Scheduler] 调度器错误: {type(e).__name__}: {e}")
+
+    def reset_daily(self):
+        try:
+            result = check_and_reset_daily()
+            if result.get("success") and not result.get("skipped"):
+                print(f"✅ [Scheduler] 已执行每日重置 ({result.get('resetTime')})")
+        except Exception as e:
+            print(f"⚠️ [Scheduler] 重置任务错误: {type(e).__name__}: {e}")
 
 
 @app.route('/')
@@ -75,7 +113,7 @@ def get_team_data():
         
         # 获取新数据
         print("📡 获取最新数据...")
-        reader = BuBeiDanReader(SID)
+        reader = BuBeiDanReader(SID, cookie=os.getenv('BUBEIDAN_COOKIE'))
         members = reader.get_team_data()
         
         if members:
@@ -113,7 +151,7 @@ def get_team_summary():
     获取团队统计摘要
     """
     try:
-        reader = BuBeiDanReader(SID)
+        reader = BuBeiDanReader(SID, cookie=os.getenv('BUBEIDAN_COOKIE'))
         members = reader.get_team_data()
         
         if members:
@@ -144,6 +182,8 @@ def get_team_summary():
 
 
 if __name__ == '__main__':
+    scheduler = DataSyncScheduler(interval=60)
+    scheduler.start()
     print("="*60)
     print("🚀 不背单词数据API服务器启动中...")
     print("="*60)

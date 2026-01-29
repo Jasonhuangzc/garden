@@ -1,12 +1,11 @@
 import http.server
 import socketserver
 import os
-import sys
 import time
 import threading
-import subprocess
 
 from daily_reset import check_and_reset_daily
+from fetch_current_data import fetch_and_sync
 
 PORT = 8000
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -29,32 +28,22 @@ class DataSyncScheduler(threading.Thread):
     def fetch_data(self):
         try:
             print(f"🔄 [Scheduler] 正在抓取最新数据 ({time.strftime('%H:%M:%S')})...")
-            script_path = os.path.join(DIRECTORY, "fetch_current_data.py")
             json_path = os.path.join(DIRECTORY, "current_team_data.json")
             
             # 记录文件的旧修改时间
             old_mtime = os.path.getmtime(json_path) if os.path.exists(json_path) else 0
             
-            # 使用 DEVNULL 丢弃输出，避免所有编码问题
-            result = subprocess.run(
-                [sys.executable, script_path],
-                cwd=DIRECTORY,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                timeout=30
-            )
+            result = fetch_and_sync()
             
             # 通过检查文件是否更新来判断成功
             new_mtime = os.path.getmtime(json_path) if os.path.exists(json_path) else 0
             
             if new_mtime > old_mtime:
                 print(f"✅ [Scheduler] 数据更新成功")
-            elif result.returncode == 0:
+            elif result:
                 print(f"✅ [Scheduler] 脚本执行成功（数据无变化）")
             else:
-                print(f"⚠️ [Scheduler] 脚本返回非0 (退出码: {result.returncode})")
-        except subprocess.TimeoutExpired:
-            print(f"⚠️ [Scheduler] 抓取超时 (>30秒)")
+                print("⚠️ [Scheduler] 抓取失败")
         except Exception as e:
             print(f"⚠️ [Scheduler] 调度器错误: {type(e).__name__}: {e}")
 

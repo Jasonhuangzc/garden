@@ -21,18 +21,29 @@ class BuBeiDanReader:
         }
     }
     
-    def __init__(self, sid: str):
+    def __init__(self, sid: str, cookie: Optional[str] = None):
         self.sid = sid
+        self.cookie = cookie
         self.base_url = "https://learnywhere.cn/api/bb/20/09/gstudy/inapp/index-data"
         
     def get_headers(self) -> Dict[str, str]:
         """获取请求头"""
-        return {
+        headers = {
             'Host': 'learnywhere.cn',
             'Accept': 'application/json, text/plain, */*',
             'User-Agent': 'LangeasyLexis/5.9.17 Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9'
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            'Referer': (
+                'https://learnywhere.cn/bb/daka/s68?feat=float_group_day16'
+                f'&sid={self.sid}'
+                '&theme=dark-theme&navheight=91&mm=10&font-family=sans&topup=1'
+            )
         }
+
+        if self.cookie:
+            headers['Cookie'] = self.cookie
+
+        return headers
     
     def fetch_data(self, season: int = 68, timezone: int = 480) -> Optional[Dict]:
         """获取组队数据"""

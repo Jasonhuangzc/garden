@@ -65,42 +65,49 @@ def update_user_in_firestore(user_id: str, words_count: int, study_time: int, ch
     return True
 
 
-def main():
-    # SID
-    sid = "k0t5CNBsU5GDZc1N84CAyOgO7xgq03+uYbSc8xTOpCgPU5y/uRUw0Ui38ICaeC89p2Bo/LONDpihP6+v6X3T2KsbOTY5yrlfApuKYjiysYplM3a7mB4dhGL5q/wLptL7aMaH1gGZelkdNqYP/sdojTJL9qPtSfOSHQn/XH5ZDZedyP7CvUeuhzAlyPQPUEZ9ErSXmzaocEUsXa1zL9XvBXqhsJAIk20f358zKsMsmXR0wcx7H5kgagYj9ev2QAvkNGakVdVwOeB6ArKVo1WXW0h0fH3RTieWXxNAO4YRiCO6n1jD/fwujEMwrdFVDvQNrB2F8sjIQSEcy+7DTEC0Qg=="
-    
-    reader = BuBeiDanReader(sid)
-    
+def fetch_and_sync():
+    sid = os.getenv(
+        "BUBEIDAN_SID",
+        "k0t5CNBsU5GDZc1N84CAyOgO7xgq03+uYbSc8xTOpCgPU5y/uRUw0Ui38ICaeC89p2Bo/LONDpihP6+v6X3T2KsbOTY5yrlfApuKYjiysYplM3a7mB4dhGL5q/wLptL7aMaH1gGZelkdNqYP/sdojTJL9qPtSfOSHQn/XH5ZDZedyP7CvUeuhzAlyPQPUEZ9ErSXmzaocEUsXa1zL9XvBXqhsJAIk20f358zKsMsmXR0wcx7H5kgagYj9ev2QAvkNGakVdVwOeB6ArKVo1WXW0h0fH3RTieWXxNAO4YRiCO6n1jD/fwujEMwrdFVDvQNrB2F8sjIQSEcy+7DTEC0Qg=="
+    )
+    cookie = os.getenv("BUBEIDAN_COOKIE")
+
+    reader = BuBeiDanReader(sid, cookie=cookie)
+
     print("[API] Fetching word data...")
     members = reader.get_team_data()
-    
-    if members:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[Time] {timestamp}")
-        
-        # 写入 Firestore 数据库
-        for member in members:
-            user_id = member.get('user_id', 'unknown')
-            words_count = member.get('背单词数量', 0)
-            study_time = member.get('背单词时间(分钟)', 0)
-            check_in_days = member.get('打卡天数', 0)
-            
-            update_user_in_firestore(user_id, words_count, study_time, check_in_days)
-        
-        # 同时保存到本地 JSON（作为备份，不再被前端使用）
-        output_data = {
-            "timestamp": timestamp,
-            "members": members,
-            "source": "backend_api"
-        }
-        
-        with open(os.path.join(SCRIPT_DIR, 'current_team_data.json'), 'w', encoding='utf-8') as f:
-            json.dump(output_data, f, ensure_ascii=False, indent=2)
-        
-        print("[OK] Data synced to Firestore successfully!")
-        print("="*50)
-    else:
+
+    if not members:
         print("[ERR] Failed to fetch data")
+        return False
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[Time] {timestamp}")
+
+    for member in members:
+        user_id = member.get('user_id', 'unknown')
+        words_count = member.get('背单词数量', 0)
+        study_time = member.get('背单词时间(分钟)', 0)
+        check_in_days = member.get('打卡天数', 0)
+
+        update_user_in_firestore(user_id, words_count, study_time, check_in_days)
+
+    output_data = {
+        "timestamp": timestamp,
+        "members": members,
+        "source": "backend_api"
+    }
+
+    with open(os.path.join(SCRIPT_DIR, 'current_team_data.json'), 'w', encoding='utf-8') as f:
+        json.dump(output_data, f, ensure_ascii=False, indent=2)
+
+    print("[OK] Data synced to Firestore successfully!")
+    print("="*50)
+    return True
+
+
+def main():
+    fetch_and_sync()
 
 
 if __name__ == "__main__":

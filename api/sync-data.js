@@ -92,13 +92,10 @@ async function updateUserInFirestore(userId, wordsCount, studyTime, checkInDays)
         newWords = wordsCount;
     }
 
-    // 计算积分：每10个单词 = 10积分
+    // 计算积分：1个单词 = 1积分
     // 限制单次最多获得 100 积分（防止异常）
     const MAX_POINTS_PER_SYNC = 100;
-    let pointsToAdd = 0;
-    if (newWords >= 10) {
-        pointsToAdd = Math.min(Math.floor(newWords / 10) * 10, MAX_POINTS_PER_SYNC);
-    }
+    let pointsToAdd = Math.min(newWords, MAX_POINTS_PER_SYNC);
 
     await userRef.update({
         totalWordsToday: wordsCount,

@@ -31,7 +31,7 @@ const FLOWERS = {
         id: 'tulip',
         name: 'Tulips',
         nameZh: '郁金香',
-        price: 5,
+        price: 10,
         image: 'image/image (6).png'
     },
     lavender: {

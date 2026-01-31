@@ -418,12 +418,15 @@ function updateGardenUI(gardenData) {
 }
 
 /**
- * 更新花价格显示
+ * 更新花价格显示（根据配置动态读取）
  */
 function updateFlowerPrices() {
     const priceElements = document.querySelectorAll('.flower-price');
-    priceElements.forEach(el => {
-        el.textContent = '5 Pts';  // 所有花都是5金币
+    const flowerIds = ['rose', 'sunflower', 'lavender', 'tulip']; // 与HTML顺序一致
+    priceElements.forEach((el, index) => {
+        const flowerId = flowerIds[index];
+        const price = FLOWERS[flowerId]?.price || 5;
+        el.textContent = `${price} Pts`;
     });
 }
 
@@ -582,7 +585,7 @@ function setupEventListeners() {
 
     // 购买花朵按钮
     const redeemButtons = document.querySelectorAll('.redeem-btn');
-    const flowerIds = ['rose', 'sunflower', 'tulip', 'lavender'];
+    const flowerIds = ['rose', 'sunflower', 'lavender', 'tulip'];
     redeemButtons.forEach((btn, index) => {
         btn.addEventListener('click', () => {
             if (!btn.classList.contains('disabled')) {
